@@ -1,0 +1,6 @@
+@TuningService_HostAddress = http://localhost:5157
+
+GET {{TuningService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
