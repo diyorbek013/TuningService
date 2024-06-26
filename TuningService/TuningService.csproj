@@ -20,4 +20,12 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Tuning.Library\Tuning.Library.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>

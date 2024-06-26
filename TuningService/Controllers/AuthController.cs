@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Tuning.Library.Auth;
 using TuningService.DTOs;
 
 namespace TuningService.Controllers
@@ -41,7 +42,7 @@ namespace TuningService.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginDto)
         {
             var result = await _mediator.Send(new LoginUser.Command(loginDto));
             if (result.Success)

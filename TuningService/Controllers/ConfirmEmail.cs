@@ -1,6 +1,6 @@
 ﻿using MediatR;
+using Tuning.Library.Base;
 using TuningService.DTOs;
-using TuningService.Models;
 using TuningService.Services;
 using TuningService.Settings;
 

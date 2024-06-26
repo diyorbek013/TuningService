@@ -1,5 +1,52 @@
-﻿<h3>Login</h3>
-
+﻿@page "/login"
+@using AdminPanel.Services.ApiServices.AuthServices
+@using AdminPanel.Shared.Layouts
+@using Microsoft.AspNetCore.Components.Authorization
+@using Tuning.Library.Auth
+@using static AdminPanel.Shared.Layouts.MainLayout
+@inject AuthenticationService authService
+@inject AuthenticationStateProvider AuthState
+@inject NavigationManager nav
+@layout LoginLayout
+@* <form style="display:flex; flex-direction:column; gap:10px; "> *@
+<div style="box-shadow: 0px 0px 10px 0px #0000001A; border-radius:10px; background-color:white; padding:8px; display:flex; flex-direction:column; gap:10px; max-width:300px;">
+    <span>Email</span>
+    <input type="text" @bind="request.Email" style="padding:8px; border-radius:10px; border:1px solid #D9D9D9; font-size:18px;" />
+    <span>Password</span>
+    <input type="password" @bind="request.Password" style="padding:8px; border-radius:10px; border:1px solid #D9D9D9; font-size:18px;" />
+    <button type="submit" style="outline:none; padding:8px; border-radius:8px; border-width:0px;" @onclick="OnSubmit">Submit</button>
+</div>
+@* </form> *@
 @code {
-
+    [Parameter]
+    public EventCallback<LoginRequest> UserData { get; set; }
+    GetUserInfoDelegate? userInfoDelegate;
+    public LoginRequest request = new();
+    bool loading;
+    string error = "";
+    async Task OnSubmit()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
+                return;
+            loading = true;
+            error = "";
+            var token = await authService.GetToken(request);
+            if (token != null && !string.IsNullOrEmpty(token))
+            {
+                userInfoDelegate = MainLayout.GetUserInfo;
+                userInfoDelegate(request, AuthState, nav);
+            }
+        }
+        catch (Exception e)
+        {
+            error = e.Message;
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
 }

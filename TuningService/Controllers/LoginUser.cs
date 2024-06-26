@@ -1,6 +1,7 @@
 ﻿using MediatR;
+using Tuning.Library.Auth;
+using Tuning.Library.Base;
 using TuningService.DTOs;
-using TuningService.Models;
 using TuningService.Services;
 using TuningService.Settings;
 
@@ -10,11 +11,11 @@ namespace TuningService.Controllers
     {
         public class Command : IRequest<ApiBaseResultModel>
         {
-            public Command(LoginDto model)
+            public Command(LoginRequest model)
             {
                 Model = model;
             }
-            public LoginDto Model { get; set; }
+            public LoginRequest Model { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, ApiBaseResultModel>

@@ -1,0 +1,71 @@
+﻿@using AdminPanel.Pages
+@using AdminPanel.Services.ApiServices.AuthServices
+@using AdminPanel.StaticData
+@using CRM_Delivery.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using Newtonsoft.Json
+@using Tuning.Library.Auth
+
+@inherits LayoutComponentBase
+@inject CookieService cookieService
+
+<CascadingValue Value="this">
+    <AuthorizeView>
+        <Authorized>
+            <div class="page">
+                <div class="sidebar">
+                    <NavMenu />
+                </div>
+
+                <main>
+                    <div class="top-row px-4">
+                        <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+                    </div>
+
+                    <article class="content px-4">
+                        @Body
+                    </article>
+                </main>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <div style="display:grid; place-items:center; height:100vh; width:100vw">
+                <Login />
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingValue>
+
+@code {
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthTask { get; set; }
+    public delegate void GetUserInfoDelegate(LoginRequest message, AuthenticationStateProvider stateProvider, NavigationManager nav);
+    private System.Security.Claims.ClaimsPrincipal? user;
+    string UserName = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await cookieService.GetCookie(Keys.token);
+        //tekendan username oqis
+        UserName = "admin" ?? "Admin";
+    }
+    public static async void GetUserInfo(LoginRequest info, AuthenticationStateProvider stateProvider, NavigationManager nav)
+    {
+        MainLayout main = new();
+        await main.GetUserData(info, stateProvider, nav);
+    }
+    public async Task GetUserData(LoginRequest userData, AuthenticationStateProvider AuthState, NavigationManager nav)
+    {
+        try
+        {
+            UserName = userData?.Email ?? "Admin";
+            var authState = await ((CustomAuthenticationStateProvider)AuthState).ChangeUser(/* userData?.UserName */ userData.Email, userData?.Password);
+            this.user = authState.User;
+            nav.NavigateTo("/");
+        }
+        catch (Exception)
+        {
+
+        }
+    }
+}

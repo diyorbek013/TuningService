@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System.Net;
+using Tuning.Library.Base;
 using TuningService.DTOs;
-using TuningService.Models;
 using TuningService.Services;
 using TuningService.Settings;
 

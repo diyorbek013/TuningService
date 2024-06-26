@@ -24,6 +24,16 @@ namespace TuningService
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("MyCorsPolicy",
+                    builder =>
+                    {
+                        builder.SetIsOriginAllowed(origin => true).WithOrigins("*")
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+            });
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => 
             {
@@ -44,7 +54,7 @@ namespace TuningService
             builder.Services.AddScoped<JwtService>();
 
             var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
-            builder.Services.AddSingleton(jwtSettings);
+            builder!.Services.AddSingleton(jwtSettings);
 
             builder.Services.AddAuthentication(options =>
             {
@@ -100,6 +110,7 @@ namespace TuningService
             });
 
             var app = builder.Build();
+            app.UseCors("MyCorsPolicy");
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
