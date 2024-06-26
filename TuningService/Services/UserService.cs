@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Net;
 using TuningService.Data;
 using TuningService.DTOs;
 
@@ -7,10 +8,11 @@ namespace TuningService.Services
     public class UserService
     {
         private readonly UserManager<ApplicationUser> _userManager;
-
-        public UserService(UserManager<ApplicationUser> userManager)
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public async Task<ApplicationUser> RegisterUserAsync(UserRegistrationDto registrationDto)
@@ -24,6 +26,11 @@ namespace TuningService.Services
             var result = await _userManager.CreateAsync(user, registrationDto.Password);
             if (result.Succeeded)
             {
+                if (!await _roleManager.RoleExistsAsync("user"))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole("user"));
+                }
+                await _userManager.AddToRoleAsync(user, "user");
                 return user;
             }
 
@@ -54,6 +61,10 @@ namespace TuningService.Services
         public async Task<bool> CheckPasswordAsync(ApplicationUser user, string password)
         {
             return await _userManager.CheckPasswordAsync(user, password);
+        }
+        public async Task<IList<string>> GetUserRolesAsync(ApplicationUser user)
+        {
+            return await _userManager.GetRolesAsync(user);
         }
     }
 }

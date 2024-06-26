@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using System.Net;
 using TuningService.DTOs;
 using TuningService.Models;
 using TuningService.Services;
@@ -39,7 +40,9 @@ namespace TuningService.Controllers
                         var user = await _userService.RegisterUserAsync(model);
                         var token = await _userService.GenerateEmailConfirmationTokenAsync(user);
 
-                        var confirmationLink = $"https://yourdomain.com/api/auth/confirmemail?userId={user.Id}&token={token}";
+                        var encodedToken = WebUtility.UrlEncode(token);
+
+                        var confirmationLink = $"https://localhost:7025/api/auth/confirmemail?userId={user.Id}&token={encodedToken}";
                         var subject = "Confirm your email";
                         var message = $"Please confirm your email by clicking on this link: {confirmationLink}";
 

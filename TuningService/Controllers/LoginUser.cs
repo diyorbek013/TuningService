@@ -37,7 +37,8 @@ namespace TuningService.Controllers
 
                     if (user != null && await _userService.CheckPasswordAsync(user, model.Password))
                     {
-                        var token = _jwtService.GenerateToken(user);
+                        var roles = await _userService.GetUserRolesAsync(user);
+                        var token = _jwtService.GenerateToken(user, roles);
                         return new ApiBaseResultModel { Data = token };
                     }
 

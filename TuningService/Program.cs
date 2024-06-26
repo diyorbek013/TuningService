@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Scooter.Advertisement.Api.Data;
 using System.Text;
 using TuningService.Data;
+using TuningService.Migrations;
 using TuningService.Services;
 using TuningService.Settings;
 
@@ -115,6 +117,18 @@ namespace TuningService
 
             app.MapControllers();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                logger.LogInformation($"Db conn: {builder.Configuration.GetConnectionString("DefaultConnection")}");
+
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                db.Database.Migrate();
+
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                AccountDatabaseInitializer.Seed(userManager, roleManager);
+            }
             app.Run();
         }
     }
