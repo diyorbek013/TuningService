@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TuningService.Data;
 
@@ -11,9 +12,11 @@ using TuningService.Data;
 namespace TuningService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240627045938_FileAdded")]
+    partial class FileAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,32 +223,6 @@ namespace TuningService.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("TuningService.Data.Car", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BrandName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MadeYear")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Model")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Cars");
-                });
-
             modelBuilder.Entity("TuningService.Data.File", b =>
                 {
                     b.Property<Guid>("Id")
@@ -266,30 +243,6 @@ namespace TuningService.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Files");
-                });
-
-            modelBuilder.Entity("TuningService.Data.TuningDetail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CarId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TuningPartOfCar")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CarId");
-
-                    b.ToTable("TuningDetails");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -341,22 +294,6 @@ namespace TuningService.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("TuningService.Data.TuningDetail", b =>
-                {
-                    b.HasOne("TuningService.Data.Car", "Car")
-                        .WithMany("TuningDetails")
-                        .HasForeignKey("CarId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Car");
-                });
-
-            modelBuilder.Entity("TuningService.Data.Car", b =>
-                {
-                    b.Navigation("TuningDetails");
                 });
 #pragma warning restore 612, 618
         }

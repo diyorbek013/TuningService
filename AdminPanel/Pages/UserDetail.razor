@@ -1,0 +1,69 @@
+﻿@page "/users/{UserId}"
+@using AdminPanel.Services
+@using Tuning.Library.UserDetail
+@inject UserService UserService
+@inject NavigationManager NavigationManager
+@code {
+    [Parameter]
+    public string UserId { get; set; }
+
+    private User user;
+    private List<Car> cars;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        user = await UserService.GetUserByIdAsync(UserId);
+        cars = await UserService.GetUserCarsAsync(UserId);
+    }
+}
+
+<h3>User Details</h3>
+
+@if (user == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div>
+        <p><strong>Email:</strong> @user.Email</p>
+        <p><strong>UserName:</strong> @user.UserName</p>
+    </div>
+
+    <h4>Cars</h4>
+    @if (cars == null || cars.Count == 0)
+    {
+        <p>No cars found for this user.</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Brand Name</th>
+                    <th>Model</th>
+                    <th>Made Year</th>
+                    <th>Tuning Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var car in cars)
+                {
+                    <tr>
+                        <td>@car.BrandName</td>
+                        <td>@car.Model</td>
+                        <td>@car.MadeYear</td>
+                        <td>
+                            <ul>
+                                @foreach (var tuningDetail in car.TuningDetails)
+                                {
+                                    <li>@tuningDetail.TuningPartOfCar - @tuningDetail.Description</li>
+                                }
+                            </ul>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

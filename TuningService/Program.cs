@@ -52,6 +52,11 @@ namespace TuningService
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<JwtService>();
+            builder.Services.AddScoped<FileUploadService>();
+            builder.Services.AddScoped<UserDetailService>();
+
+            builder.Services.AddScoped<CarService>();
+            builder.Services.AddScoped<TuningDetailService>();
 
             var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
             builder!.Services.AddSingleton(jwtSettings);

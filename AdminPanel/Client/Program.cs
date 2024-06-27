@@ -1,4 +1,5 @@
 using AdminPanel;
+using AdminPanel.Services;
 using AdminPanel.Services.ApiServices.AuthServices;
 using CRM_Delivery.Services;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -23,6 +24,7 @@ namespace AdminPanel
             builder.Services.AddScoped<AuthenticationService>();
             builder.Services.AddScoped<AuthenticatedRouteView>();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+            builder.Services.AddScoped<UserService>();
 
             await builder.Build().RunAsync();
         }

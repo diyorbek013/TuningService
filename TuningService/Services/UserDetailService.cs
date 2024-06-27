@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Tuning.Library.UserDetail;
 using TuningService.Data;
 
 namespace TuningService.Services
@@ -7,52 +8,65 @@ namespace TuningService.Services
     public class UserDetailService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        readonly ApplicationDbContext _context;
 
-        public UserDetailService(UserManager<ApplicationUser> userManager)
+        public UserDetailService(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
             _userManager = userManager;
+            _context = context;
         }
 
-        //public async Task<List<UserModel>> GetAllUsersAsync()
-        //{
-        //    var users = await _userManager.Users.ToListAsync();
-        //    return users.Select(user => new UserModel
-        //    {
-        //        Id = user.Id,
-        //        Email = user.Email,
-        //        Name = user.UserName
-        //    }).ToList();
-        //}
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            var users = await _userManager.Users.ToListAsync();
 
-        //public async Task<UserDetailsModel> GetUserByIdAsync(string userId)
-        //{
-        //    var user = await _userManager.FindByIdAsync(userId);
-        //    if (user == null) return null;
+            return users.Select(user => new User
+            {
+                Id = user.Id,
+                Email = user.Email,
+                UserName = user.UserName
+            }).ToList();
+        }
 
-        //    // Assuming you have methods to get related data
-        //    var cars = await GetCarsByUserIdAsync(userId);
-        //    var tuningDetails = await GetTuningDetailsByUserIdAsync(userId);
+        public async Task<User> GetUserByIdAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return null;
 
-        //    return new UserDetailsModel
-        //    {
-        //        Email = user.Email,
-        //        Name = user.UserName,
-        //        Cars = cars,
-        //        TuningDetails = tuningDetails
-        //    };
-        //}
+            return new User
+            {
+                Id = user.Id,
+                Email = user.Email,
+                UserName = user.UserName,
+            };
+        }
 
-        //// Dummy methods for fetching related data
-        //private Task<List<CarModel>> GetCarsByUserIdAsync(string userId)
-        //{
-        //    // Replace with actual data fetching logic
-        //    return Task.FromResult(new List<CarModel>());
-        //}
+        public async Task<List<Tuning.Library.UserDetail.Car>> GetCarsByUserIdAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return null;
 
-        //private Task<List<TuningDetailModel>> GetTuningDetailsByUserIdAsync(string userId)
-        //{
-        //    // Replace with actual data fetching logic
-        //    return Task.FromResult(new List<TuningDetailModel>());
-        //}
+            var cars = await _context.Cars
+                .Include(a => a.TuningDetails)
+                .Where(a => a.UserId == userId)
+                .Select(a => new Tuning.Library.UserDetail.Car()
+                {
+                    Id = a.Id,
+                    BrandName = a.BrandName,
+                    MadeYear = a.MadeYear,
+                    Model = a.Model,
+                    UserId = a.UserId,
+                    TuningDetails = a.TuningDetails.Select(b => new Tuning.Library.UserDetail.TuningDetail()
+                    {
+                        CarId = b.CarId,
+                        Description = b.Description,
+                        Id = b.Id,
+                        TuningPartOfCar = b.TuningPartOfCar
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return cars;
+        }
     }
 }
