@@ -19,7 +19,7 @@ namespace TuningService.Services
         {
             var user = new ApplicationUser
             {
-                UserName = registrationDto.Email,
+                UserName = registrationDto.UserName,
                 Email = registrationDto.Email
             };
 
