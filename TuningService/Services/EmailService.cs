@@ -29,11 +29,11 @@ namespace TuningService.Services
             var response = await client.ExecuteAsync(request);
             if (response.IsSuccessStatusCode)
             {
-
+                //
             }
             else
             {
-
+                //
             }
         }
     }

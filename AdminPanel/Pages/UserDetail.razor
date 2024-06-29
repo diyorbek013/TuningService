@@ -3,6 +3,8 @@
 @using Tuning.Library.UserDetail
 @inject UserService UserService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
 @code {
     [Parameter]
     public string UserId { get; set; }
@@ -14,6 +16,20 @@
     {
         user = await UserService.GetUserByIdAsync(UserId);
         cars = await UserService.GetUserCarsAsync(UserId);
+
+        if (cars != null && cars.Any())
+        {
+            var carLabels = cars.Select(c => c.BrandName + " " + c.Model).ToList();
+            var tuningCounts = cars.Select(c => c.TuningDetails.Count).ToList();
+
+            var chartData = new
+            {
+                labels = carLabels,
+                values = tuningCounts
+            };
+
+            await JSRuntime.InvokeVoidAsync("drawChart", "myChart", chartData);
+        }
     }
 }
 
@@ -67,3 +83,6 @@ else
         </table>
     }
 }
+
+<h4>Car Tuning Parts Chart</h4>
+<canvas id="myChart" width="400" height="200"></canvas>
